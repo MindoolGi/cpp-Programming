@@ -1,0 +1,100 @@
+#include <iostream>
+using namespace std; // std:: 없이 함수 or 객체 사용
+
+// class마다 void setValue와 int calculate를 넣어놓아서 멤버 변수를 복사함과 동시에 연산까지 한번에 설정
+class Add {
+public:
+	int a;
+	int b;
+	void setValue(int x, int y) {
+		a = x;
+		b = y;
+	}
+	int calculate() {
+		return a + b;
+	}
+};
+
+class Sub {
+public:
+	int a;
+	int b;
+	void setValue(int x, int y) {
+		a = x;
+		b = y;
+	}
+	int calculate() {
+		return a - b;
+	}
+};
+
+class Mul {
+public:
+	int a;
+	int b;
+	void setValue(int x, int y) {
+		a = x;
+		b = y;
+	}
+	int calculate() {
+		return a * b;
+	}
+};
+
+class Div {
+public:
+	int a;
+	int b;
+	void setValue(int x, int y) {
+		a = x;
+		b = y;
+	}
+	int calculate() {
+		return a / b;
+	}
+};
+
+int main() {
+	int x; // 정수 1
+	int y; // 정수 2
+	char z; // 연산자 1
+
+	Add a;
+	Sub s;
+	Mul m;
+	Div d;
+
+	while (true) {
+		cout << "두 정수와 연산자를 입력하세요 >> ";
+		cin >> x >> y >> z;
+
+		// 탈출을 가능하게 만들어놓음, 주석처리하여 기능은 없음
+		/*
+		if (z == 'l') {
+			break;
+		}
+		*/
+
+		//z의 연산자에 따라 다른 결과 생성, 연산자 탭에 사칙연산 외 다른 문자를 넣으면 처음으로 되돌아감
+		switch (z) {
+		case '+': 
+			a.setValue(x, y);
+			cout << "결과: " << a.calculate() << endl;
+			break;
+		case '-':
+			s.setValue(x, y);
+			cout << "결과: " << s.calculate() << endl;
+			break;
+		case '*':
+			m.setValue(x, y);
+			cout << "결과: " << m.calculate() << endl;
+			break;
+		case '/':
+			d.setValue(x, y);
+			cout << "결과: " << d.calculate() << endl;
+			break;
+		}
+			
+	}
+	return 0;
+}
