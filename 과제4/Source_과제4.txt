@@ -1,0 +1,140 @@
+#include <iostream>
+#include <string>
+using namespace std;
+
+class Printer {
+protected:
+    string model; // 모델명
+    string manufacturer; // 제조사
+    int printedCount; // 인쇄 매수
+    int availableCount; // 인쇄 종이 잔량
+
+public: // 외부에서 접근 가능한 멤버
+    Printer(string model, string manufacturer, int availableCount) {
+        this->model = model;
+        this->manufacturer = manufacturer;
+        this->printedCount = 0;
+        this->availableCount = availableCount;
+    }
+    ~Printer() {
+        cout << "Printer 소멸자 호출: " << model << endl;
+    }
+
+    bool print(int pages) { // 인쇄 시도 함수, 인쇄 성공시 printedCount, availableCount 갱신
+        if (pages > availableCount) {
+            cout << "용지가 부족하여 프린트할 수 없습니다.\n";
+            return false; // 페이지 수가 현재 종이 잔량보다 많으면 bool에서 false 출력
+        }
+        printedCount += pages; // 인쇄된 페이지 추가(
+        availableCount -= pages; // 인쇄 성공 시 페이지만큼 종이 줄이기
+        return true; // 성공 시 true 출력
+    }
+
+    void showStatus() const {
+        cout << model << " " << manufacturer << ", 남은 종이 " << availableCount; // 현상태 (모델, 제조사, 남은 종이 수)
+    }
+};
+
+class InkJetPrinter : public Printer {// Printer 클래스를 상속받기
+    int availableInk; // 잉크 잔량
+
+public:
+    InkJetPrinter(string model, string manufacturer, int availableCount, int availableInk)
+        : Printer(model, manufacturer, availableCount) {
+        this->availableInk = availableInk; // 기본 클래스 Printer 생성자를 통해 초기화
+    }
+
+    ~InkJetPrinter(){
+        cout << "InkJetPrinter 소멸자 호출: " << model << endl;
+    }
+
+    bool print(int pages) { // print 함수 재정의
+        if (Printer::print(pages)) { // 부모클래스 print 함수 호출하여 종이 잔량 확인하는 방법
+            if (pages > availableInk) {
+                cout << "잉크가 부족하여 프린트할 수 없습니다.\n";
+                availableCount += pages; // 사용된 종이 수 복구하기
+                return false;
+            }
+            availableInk -= pages; // 인쇄시 잉크 잔량 줄이기
+            return true;
+        }
+        return false;
+    }
+
+    void showStatus() const { // showStatus함수 재정의
+        Printer::showStatus();
+        cout << ", 남은 잉크 " << availableInk << endl;
+    }
+};
+
+class LaserPrinter : public Printer {
+    int availableToner; // 레이저 프린터 클래스의 토너 잔량
+
+public:
+    LaserPrinter(string model, string manufacturer, int availableCount, int availableToner)
+        : Printer(model, manufacturer, availableCount) {
+        this->availableToner = availableToner;
+    }
+    ~LaserPrinter() {
+        cout << "LaserPrinter 소멸자 호출: " << model << endl;
+    }
+
+    bool print(int pages) {
+        if (Printer::print(pages)) {
+            if (pages > availableToner) {
+                cout << "토너가 부족하여 프린트할 수 없습니다.\n";
+                availableCount += pages; // 사용된 종이 수 복구하기
+                return false;
+            }
+            availableToner -= pages; // 인쇄시 토너 잔량 줄이기
+            return true;
+        }
+        return false;
+    }
+
+    void showStatus() const {
+        Printer::showStatus();
+        cout << ", 남은 토너 " << availableToner << endl;
+    }
+};
+
+int main() {
+    InkJetPrinter inkjet("Officejet V40", "HP", 5, 10);
+    LaserPrinter laser("SCX-6x45", "삼성전자", 3, 20);
+
+    int printertype, pages;
+    char yesorno = 'y';
+    cout << "현재 작동중인 2대의 프린터는 아래와 같다." << endl;
+    cout << "잉크젯: ";
+    inkjet.showStatus();
+    cout << "레이저: ";
+    laser.showStatus();
+    cout << endl;
+    
+
+    while (yesorno == 'y') {
+        cout << "프린터(1:잉크젯, 2:레이저)와 매수 입력>>";
+        cin >> printertype >> pages;
+
+        if (printertype == 1) {
+            if (inkjet.print(pages)) {
+                cout << "프린트하였습니다.\n";
+            }
+            inkjet.showStatus();
+        }
+        else if (printertype == 2) {
+            if (laser.print(pages)) {
+                cout << "프린트하였습니다.\n";
+            }
+            laser.showStatus();
+        }
+        else {
+            cout << "잘못된 프린터 선택입니다.\n";
+        }
+        cout << endl;
+        cout << "계속 프린트 하시겠습니까?(y/n)>>";
+        cin >> yesorno;
+    }
+
+    return 0;
+}
